@@ -20,19 +20,20 @@
   "given two strings, uses the first as scramble letters and the second as target word.
    iterates over target word, checking if the current char is available from the pool of chars left.
    by the end returns if the word can be formed from given letters."
-  [str1 str2]
-  (->> str2 vec
-       (reduce scramble-reducer (frequencies str1))
+  [letters word]
+  (->> word vec
+       (reduce scramble-reducer (frequencies letters))
        map?))
 
 (defn scramble?
   "given two strings, uses the first as scramble letters and the second as target word.
    first checks for cases where the answer is trivial, then applies scramble if needed."
-  [str1 str2]
-  (cond
-    (= str1 str2) true
-    (<= (count str1) (count str2)) false
-    :else (scramble-iter str1 str2)))
+  ([{:keys [letters word]}] (scramble? letters word))
+  ([letters word]
+   (cond
+     (= letters word) true
+     (<= (count letters) (count word)) false
+     :else (scramble-iter letters word))))
 
 (defn -main [& args]
   (println
