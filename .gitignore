@@ -13,3 +13,7 @@
 /.socket-repl-port
 .hgignore
 .hg/
+.lsp
+.calva
+.classpath
+.project
