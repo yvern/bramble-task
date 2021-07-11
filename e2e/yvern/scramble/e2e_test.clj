@@ -3,6 +3,28 @@
             [clojure.test :as t]
             [yvern.scramble.api :refer [start stop port]]))
 
+(defn get-driver
+  "utility to try out getting a driver from possible installed"
+  ([] [])
+  ([x] (if-not (vector? x) x
+               (throw (ex-info "Failed to get a driver"
+                               {:tries x}))))
+  ([fails driver']
+   (try (reduced (driver'))
+        (catch Exception e
+          (conj fails (ex-message e))))))
+
+(defn make-driver
+  "iterates over etaoin supported drivers to find one to use"
+  [_]
+  (transduce identity
+   get-driver
+   [e/firefox-headless
+    e/chrome-headless
+    e/phantom
+    e/safari
+    e/edge-headless]))
+
 (def svr (atom 8080))
 (def driver (atom nil))
 
@@ -12,7 +34,7 @@
   @(stop @svr))
 
 (defn with-driver [f]
-  (reset! driver (e/chrome))
+  (swap! driver make-driver)
   (f)
   (e/quit @driver))
 
