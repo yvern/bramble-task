@@ -2,22 +2,28 @@
  :deps {org.clojure/clojure {:mvn/version "1.10.3"}
         metosin/muuntaja {:mvn/version "0.6.8"}
         http-kit/http-kit {:mvn/version "2.5.3"}
-        metosin/malli {:mvn/version "0.5.1"}}
+        metosin/malli {:mvn/version "0.5.1"}
+        hiccup/hiccup {:mvn/version "1.0.5"}}
  :aliases
  {:scramble {:main-opts ["-m" "yvern.scramble.core"]}
-  :play {:exec-fn yvern.scramble.core/scramble?}
-  :test {:extra-paths ["test"]
-         :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}}}
-  :runner
-  {:extra-deps {io.github.cognitect-labs/test-runner
-                {:git/url "https://github.com/cognitect-labs/test-runner"
-                 :sha "2d69f33d7980c3353b246c28f72ffeafbd9f2fab"}}
-   :exec-fn cognitect.test-runner.api/test}
-  :pkg {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.216"}}}
+  :test {:extra-paths ["test"]}
+
+  :runner {:extra-deps {io.github.cognitect-labs/test-runner
+                        {:git/url "https://github.com/cognitect-labs/test-runner"
+                         :sha "2d69f33d7980c3353b246c28f72ffeafbd9f2fab"}}
+           :exec-fn cognitect.test-runner.api/test}
+
+  :no-api {:replace-deps {org.clojure/clojure {:mvn/version "1.10.3"}}}
+
+  :pkg {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.216"}}
+        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
+
   :cli {:exec-fn hf.depstar/uberjar
-            :exec-args {:aot true
+        :exec-args {:aot true
                     :jar "scramble.jar"
-                    :main-class "yvern.scramble.core"}}
+                    :main-class "yvern.scramble.core"
+                    :aliases [:no-api]}}
+
   :api {:exec-fn hf.depstar/uberjar
         :exec-args {:aot true
                     :jar "scramble-api.jar"
