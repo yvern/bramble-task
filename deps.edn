@@ -1,17 +1,19 @@
 {:paths ["src"]
- :deps {org.clojure/clojure {:mvn/version "1.10.3"}
-        metosin/muuntaja {:mvn/version "0.6.8"}
-        http-kit/http-kit {:mvn/version "2.5.3"}
-        metosin/malli {:mvn/version "0.5.1"}
-        hiccup/hiccup {:mvn/version "1.0.5"}}
+
+ :deps
+ {org.clojure/clojure {:mvn/version "1.10.3"}
+  metosin/muuntaja {:mvn/version "0.6.8"}
+  http-kit/http-kit {:mvn/version "2.5.3"}
+  metosin/malli {:mvn/version "0.5.1"}
+  hiccup/hiccup {:mvn/version "1.0.5"}}
+
  :aliases
  {:scramble {:main-opts ["-m" "yvern.scramble.core"]}
-  :test {:extra-paths ["test"]}
+  :dev {:extra-paths ["test"]}
 
-  :runner {:extra-deps {io.github.cognitect-labs/test-runner
-                        {:git/url "https://github.com/cognitect-labs/test-runner"
-                         :sha "705ad25bbf0228b1c38d0244a36001c2987d7337"}}
-           :exec-fn cognitect.test-runner.api/test}
+  :test {:extra-deps {etaoin/etaoin {:mvn/version "0.4.5"}
+                      lambdaisland/kaocha {:mvn/version "1.0.861"}}
+         :main-opts ["-m" "kaocha.runner"]}
 
   :no-api {:replace-deps {org.clojure/clojure {:mvn/version "1.10.3"}}}
 
@@ -27,8 +29,4 @@
   :api {:exec-fn hf.depstar/uberjar
         :exec-args {:aot true
                     :jar "scramble-api.jar"
-                    :main-class "yvern.scramble.api"}}
-
-  :e2e {:extra-deps {etaoin/etaoin {:mvn/version "0.4.5"}}
-        :extra-paths ["e2e"]
-        :exec-args {:dirs ["test" "e2e"]}}}}
+                    :main-class "yvern.scramble.api"}}}}

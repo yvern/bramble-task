@@ -1,4 +1,4 @@
-(ns yvern.scramble.e2e-test
+(ns yvern.scramble.e2e
   (:require [etaoin.api :as e]
             [clojure.test :as t]
             [yvern.scramble.api :refer [start stop port]]))
