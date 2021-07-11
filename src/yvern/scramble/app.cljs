@@ -15,8 +15,8 @@
 
 (defn columned [s1 s1' s2]
   [:div.columns
-   [:div.column.is-3]
-   [:div.column.is-2 s1]
+   [:div.column.is-2]
+   [:div.column.is-3 s1]
    [:div.column.is-2 s1']
    [:div.column.is-2 s2]
    [:div.column.is-3]])
@@ -37,6 +37,7 @@
 (defn text-in [play data]
   [:input.input.is-primary.is-size-5
    {:type "text" :placeholder (str "type here your " (name data))
+    :name data
     :on-change #(swap! play assoc data (-> % .-target .-value))
     :value (data @play)}])
 

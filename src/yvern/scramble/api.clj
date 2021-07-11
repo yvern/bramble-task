@@ -7,6 +7,10 @@
             [malli.error :as me])
   (:gen-class))
 
+(def stop server-stop!)
+(def port server-port)
+(def status server-status)
+
 (def scramble-play
   "schema for a valid scramble play."
   [:map
@@ -30,18 +34,20 @@
     [:post "/api"] ((wrap-format (comp (memoize scramble-handler) :body-params)) req)
     {:body "Not Found" :status 404}))
 
-(defn start [port]
+(defn start [port']
   (run-server #'router
-              {:port port :legacy-return-value? false}))
+              {:port port' :legacy-return-value? false}))
 
 (defn -main [& args]
   (let [port' (or (some-> args first Integer/parseInt) 8080)
         svr (start port')]
-    (println "server" (server-status svr) "on:" (str "http://localhost:" (server-port svr)))
+    (println "server" (status svr) "on:" (str "http://localhost:" (port svr)))
     (read-line)
-    @(server-stop! svr)
-    (println "server" (server-status svr))))
+    @(stop svr)
+    (println "server" (status svr))))
 
 (comment
   (def svr (start 8080))
-  @(server-stop! svr))
+  (clojure.java.browse/browse-url (str "http://localhost:" (port svr)))
+  @(stop svr)
+  )

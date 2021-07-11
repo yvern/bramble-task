@@ -10,7 +10,7 @@
 
   :runner {:extra-deps {io.github.cognitect-labs/test-runner
                         {:git/url "https://github.com/cognitect-labs/test-runner"
-                         :sha "2d69f33d7980c3353b246c28f72ffeafbd9f2fab"}}
+                         :sha "705ad25bbf0228b1c38d0244a36001c2987d7337"}}
            :exec-fn cognitect.test-runner.api/test}
 
   :no-api {:replace-deps {org.clojure/clojure {:mvn/version "1.10.3"}}}
@@ -27,4 +27,8 @@
   :api {:exec-fn hf.depstar/uberjar
         :exec-args {:aot true
                     :jar "scramble-api.jar"
-                    :main-class "yvern.scramble.api"}}}}
+                    :main-class "yvern.scramble.api"}}
+
+  :e2e {:extra-deps {etaoin/etaoin {:mvn/version "0.4.5"}}
+        :extra-paths ["e2e"]
+        :exec-args {:dirs ["test" "e2e"]}}}}

@@ -1,19 +1,18 @@
 (ns yvern.scramble.api-test
   (:require [clojure.test :as t]
             [org.httpkit.client :refer [post]]
-            [org.httpkit.server :refer [server-status server-port server-stop!]]
-            [yvern.scramble.api :refer [scramble-handler start]]))
+            [yvern.scramble.api :refer [scramble-handler start port stop status]]))
 
 (t/deftest api
   (t/testing "basic correct request yields status 200"
-    (t/are [input] (-> {:body-params input} scramble-handler :status (= 200))
+    (t/are [input] (-> input scramble-handler :status (= 200))
       {:letters "rekqodlw" :word "world"}
       {:letters "cedewaraaossoqqyt" :word "codewars"}
       {:letters "katas" :word "steak"}))
 
   (t/testing "requests with missing fields yield 400 and error message"
     (t/are [input err-msg]
-           (-> {:body-params input} scramble-handler
+           (-> input scramble-handler
                (= {:status 400 :body {:errors err-msg}}))
       {:letters "rekqodlw"}
       {:word ["missing required key"]}
@@ -25,13 +24,13 @@
       {:letters ["should be a string"] :word ["should be a string"]}))
 
   (t/testing "server starts up corectly, handles requests and exits"
-    (let [port 5678
+    (let [port' 5678
           payload {:letters "abc" :word "c"}
-          svr (start port)
-          api (str "http://localhost:" port "/api")]
+          svr (start port')
+          api (str "http://localhost:" port' "/api")]
 
-      (t/is (= :running (server-status svr)))
-      (t/is (= port (server-port svr)))
+      (t/is (= :running (status svr)))
+      (t/is (= port' (port svr)))
 
       (let [{:keys [status body headers]}
             @(post api {:headers {"content-type" "application/edn"
@@ -53,5 +52,5 @@
         (t/is (= "{\"errors\":{\"letters\":[\"missing required key\"],\"word\":[\"missing required key\"]}}"
                  body)))
 
-      (t/is (true? @(server-stop! svr)))
-      (t/is (= :stopped (server-status svr))))))
+      (t/is (true? @(stop svr)))
+      (t/is (= :stopped (status svr))))))
