@@ -31,4 +31,7 @@
                     :jar "scramble-api.jar"
                     :main-class "yvern.scramble.api"}}
 
-  :dev-client {:main-opts ["-m" "yvern.scramble.api"]}}}
+  :dev-client {:main-opts ["-m" "yvern.scramble.api"]}
+
+  :sidenotes {:extra-deps {sidenotes/sidenotes {:mvn/version "RELEASE"}}
+              :main-opts  ["-m" "sidenotes.core"]}}}

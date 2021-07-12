@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" content="text/html" http-equiv="Content-Type" />
+		<meta content="A Scramble checker" name="description" />
+		<title>Bramble</title>
+		<link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="css/sidenotes.css" />
+ 		<link rel="stylesheet" type="text/css" href="css/shCore.css" />
+		<link rel="stylesheet" type="text/css" href="css/shThemeSidenotes.css" />
+		<style type="text/css">.syntaxhighlighter{overflow:hidden !important;}</style>
+		<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="js/xregexp-min.js"></script>
+		<script type="text/javascript" src="js/shCore.js"></script>
+		<script type="text/javascript" src="js/shBrushClojure.js"></script>
+	</head>
+	<body>
+		<div class="gridlayout">
+			<div class="box header">
+				<h1 class="project-name">yvern.scramble.app</h1>
+				<a class="toc-link" href="index.html">table of contents</a>
+			</div>
+			<div class="box section">
+				
+			</div>
+			<div class="box section">
+				<pre class="brush: clojure">(ns yvern.scramble.app
+  (:require [reagent.core :as r]
+            [reagent.dom :as dom]
+            [ajax.core :refer [POST]]))</pre>
+			</div>
+						<div class="box section">
+				
+			</div>
+			<div class="box section">
+				<pre class="brush: clojure">(defn invalid-play? [play]
+  (-&gt;&gt; play vals (not-every? #(re-matches #&quot;^[a-z]+\$&quot; %))))</pre>
+			</div>
+						<div class="box section">
+				
+			</div>
+			<div class="box section">
+				<pre class="brush: clojure">(defn scramble-handler [plays result]
+  (swap! plays #(-&gt;&gt; % (cons result) (take 10))))</pre>
+			</div>
+						<div class="box section">
+				
+			</div>
+			<div class="box section">
+				<pre class="brush: clojure">(defn scramble!
+  [plays play]
+  (POST &quot;/api&quot; {:headers {&quot;Accept&quot; &quot;application/transit+json&quot;}
+                :params play
+                :handler (partial scramble-handler plays)
+                :error-handler prn}))</pre>
+			</div>
+						<div class="box section">
+				
+			</div>
+			<div class="box section">
+				<pre class="brush: clojure">(def result-header :h2.title.has-text-centered.is-size-4)
+(def center-p :p.is-size-4.has-text-centered)</pre>
+			</div>
+						<div class="box section">
+				
+			</div>
+			<div class="box section">
+				<pre class="brush: clojure">(defn columned [s1 s1' s2]
+  [:div.columns
+   [:div.column.is-2]
+   [:div.column.is-3 s1]
+   [:div.column.is-2 s1']
+   [:div.column.is-2 s2]
+   [:div.column.is-3]])</pre>
+			</div>
+						<div class="box section">
+				
+			</div>
+			<div class="box section">
+				<pre class="brush: clojure">(def section-hero
+  [:section.hero.is-primary
+   [:div.hero-body
+    [:p.title &quot;Welcome to Bramble!&quot;]
+    [:p.subtitle &quot;A Scramble checker&quot;]]])</pre>
+			</div>
+						<div class="box section">
+				
+			</div>
+			<div class="box section">
+				<pre class="brush: clojure">(defn play-1 [{:keys [letters word scramble?]}]
+  (columned [center-p letters]
+            [center-p word]
+            (if scramble?
+              [:span.is-light.tag.is-success.is-large &quot;Yeah! We got bramble!&quot;]
+              [:span.is-light.tag.is-danger.is-large &quot;Words don't bramble...&quot;])))</pre>
+			</div>
+						<div class="box section">
+				
+			</div>
+			<div class="box section">
+				<pre class="brush: clojure">(defn text-in [play data]
+  [:input.input.is-primary.is-size-5
+   {:type &quot;text&quot;
+    :placeholder (str &quot;type here your &quot; (name data))
+    :name data
+    :on-change #(swap! play assoc data (-&gt; % .-target .-value))
+    :value (data @play)}])</pre>
+			</div>
+						<div class="box section">
+				
+			</div>
+			<div class="box section">
+				<pre class="brush: clojure">(defn submit [play plays]
+  [:button.button.is-link.is-fullwidth.is-size-5
+   {:on-click #(do (scramble! plays @play)
+                   (doto play
+                     (swap! assoc :letters )
+                     (swap! assoc :word )))
+    :disabled ((memoize invalid-play?) @play)}
+   &quot;Let's go!&quot;])</pre>
+			</div>
+						<div class="box section">
+				
+			</div>
+			<div class="box section">
+				<pre class="brush: clojure">(defn main []
+  (let [plays (r/atom '())
+        play (r/atom {:letters  :word })]
+    (fn []
+      [:div section-hero
+       [:br]
+       (columned (text-in play :letters)
+                 (text-in play :word)
+                 (submit play plays))
+       [:br]
+       (columned [result-header &quot;Letters&quot;]
+                 [result-header &quot;Word&quot;]
+                 [result-header &quot;Bramble?&quot;])
+       (for [play @plays] [play-1 play])])))</pre>
+			</div>
+						<div class="box section">
+				
+			</div>
+			<div class="box section">
+				<pre class="brush: clojure">(dom/render [main] (.getElementById js/document &quot;content&quot;))</pre>
+			</div>
+			
+			<div class="box footer">
+				Generated by <a href="https://github.com/captain-porcelain/sidenotes">Sidenotes</a>.
+				&nbsp;&nbsp;
+				Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a>
+			</div>
+		</div>
+		<script type="text/javascript" src="js/app.js"></script>
+	</body>
+</html>

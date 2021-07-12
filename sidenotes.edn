@@ -1,0 +1,6 @@
+{:projectname "Bramble"
+ :description "A Scramble checker"
+ :output-to "docs"
+ :toc-filename "index.html"
+ :include-readme true
+ :theme "sidenotes"}
