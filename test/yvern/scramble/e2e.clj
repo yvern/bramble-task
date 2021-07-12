@@ -75,16 +75,20 @@
                             (e/refresh @driver)
                             (fill-play letters word)
                             (e/query @driver {:tag :button :fn/disabled true}))
-           "" ""
-           "kushfh" ""
-           "" "lisrhjg"
-           "vsku4634" "klh"
-           "kdjfg" "dfgh =")))
+
+      "" ""
+      "kushfh" ""
+      "" "lisrhjg"
+      "vsku4634" "klh"
+      "kdjfg" "dfgh =")))
 
 (t/deftest e2e-interactions
   (t/testing "input and response from spec"
-    (t/are [letters words result]
-           (check-play letters words result)
+    (t/are [letters words result] (check-play letters words result)
       "rekqodlw" "world" true
       "cedewaraaossoqqyt" "codewars" true
-      "katas"  "steak" false)))
+      "katas"  "steak" false))
+
+  (t/testing "caps at 10 latest reponses"
+    (dotimes [_ 12] (check-play "world" "word" true))
+    (t/is (>= 10 (count (e/query-all @driver {:tag :span :fn/text "Yeah! We got bramble!"}))))))

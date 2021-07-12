@@ -1,9 +1,7 @@
 (ns yvern.scramble.pages
   (:require [hiccup.core :refer [html]]))
 
-(defn load-app []
-  (prn "loading app.cljs")
-  (slurp "src/yvern/scramble/app.cljs"))
+(defn load-app [] (slurp "src/yvern/scramble/app.cljs"))
 
 (defmacro app' []
     (if *compile-files*

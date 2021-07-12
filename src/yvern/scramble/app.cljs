@@ -6,11 +6,14 @@
 (defn invalid-play? [play]
   (->> play vals (not-every? #(re-matches #"^[a-z]+$" %))))
 
+(defn scramble-handler [plays result]
+  (swap! plays #(->> % (cons result) (take 10))))
+
 (defn scramble!
   [plays play]
   (POST "/api" {:headers {"Accept" "application/transit+json"}
                 :params play
-                :handler #(swap! plays conj %)
+                :handler (partial scramble-handler plays)
                 :error-handler prn}))
 
 (def result-header :h2.title.has-text-centered.is-size-4)
@@ -48,7 +51,9 @@
 (defn submit [play plays]
   [:button.button.is-link.is-fullwidth.is-size-5
    {:on-click #(do (scramble! plays @play)
-                   (reset! play {}))
+                   (doto play
+                     (swap! assoc :letters "")
+                     (swap! assoc :word "")))
     :disabled ((memoize invalid-play?) @play)}
    "Let's go!"])
 
@@ -56,7 +61,6 @@
   (let [plays (r/atom '())
         play (r/atom {:letters "" :word ""})]
     (fn []
-      (when (< 10 (count @plays)) (swap! plays take 10))
       [:div section-hero
        [:br]
        (columned (text-in play :letters)
