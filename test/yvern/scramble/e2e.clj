@@ -18,12 +18,12 @@
   "iterates over etaoin supported drivers to find one to use"
   [_]
   (transduce identity
-   get-driver
-   [e/firefox-headless
-    e/chrome-headless
-    e/phantom
-    e/safari
-    e/edge-headless]))
+             get-driver
+             [e/firefox-headless
+              e/chrome-headless
+              e/phantom
+              e/safari
+              e/edge-headless]))
 
 (def svr (atom 8080))
 (def driver (atom nil))
@@ -31,7 +31,8 @@
 (defn with-server [f]
   (swap! svr start)
   (f)
-  @(stop @svr))
+  @(stop @svr)
+  (swap! svr port))
 
 (defn with-driver [f]
   (swap! driver make-driver)
@@ -66,7 +67,19 @@
       "Let's go!"
       "Letters"
       "Words"
-      "Bramble?")))
+      "Bramble?"))
+
+  (t/testing "submit button should be disabled on invalid inputs"
+    (t/is (e/query @driver {:tag :button :fn/disabled true}))
+    (t/are [letters word] (do
+                            (e/refresh @driver)
+                            (fill-play letters word)
+                            (e/query @driver {:tag :button :fn/disabled true}))
+           "" ""
+           "kushfh" ""
+           "" "lisrhjg"
+           "vsku4634" "klh"
+           "kdjfg" "dfgh =")))
 
 (t/deftest e2e-interactions
   (t/testing "input and response from spec"

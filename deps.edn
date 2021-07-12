@@ -29,4 +29,6 @@
   :api {:exec-fn hf.depstar/uberjar
         :exec-args {:aot true
                     :jar "scramble-api.jar"
-                    :main-class "yvern.scramble.api"}}}}
+                    :main-class "yvern.scramble.api"}}
+
+  :dev-client {:main-opts ["-m" "yvern.scramble.api"]}}}

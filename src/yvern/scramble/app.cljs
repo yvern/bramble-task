@@ -3,6 +3,9 @@
             [reagent.dom :as dom]
             [ajax.core :refer [POST]]))
 
+(defn invalid-play? [play]
+  (->> play vals (not-every? #(re-matches #"^[a-z]+$" %))))
+
 (defn scramble!
   [plays play]
   (POST "/api" {:headers {"Accept" "application/transit+json"}
@@ -36,7 +39,8 @@
 
 (defn text-in [play data]
   [:input.input.is-primary.is-size-5
-   {:type "text" :placeholder (str "type here your " (name data))
+   {:type "text"
+    :placeholder (str "type here your " (name data))
     :name data
     :on-change #(swap! play assoc data (-> % .-target .-value))
     :value (data @play)}])
@@ -44,12 +48,13 @@
 (defn submit [play plays]
   [:button.button.is-link.is-fullwidth.is-size-5
    {:on-click #(do (scramble! plays @play)
-                   (reset! play {}))}
+                   (reset! play {}))
+    :disabled ((memoize invalid-play?) @play)}
    "Let's go!"])
 
 (defn main []
   (let [plays (r/atom '())
-        play (r/atom {})]
+        play (r/atom {:letters "" :word ""})]
     (fn []
       (when (< 10 (count @plays)) (swap! plays take 10))
       [:div section-hero
