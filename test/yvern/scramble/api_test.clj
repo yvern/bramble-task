@@ -12,7 +12,7 @@
 
   (t/testing "requests with missing fields yield 400 and error message"
     (t/are [input err-msg]
-           (= {:status 400 :body {:errors err-msg}}
+           (= {:status 400 :body (assoc input :errors err-msg)}
               (scramble-handler input))
       {:letters "rekqodlw"}
       {:word ["missing required key"]}

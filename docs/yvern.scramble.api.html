@@ -21,7 +21,7 @@
 				<a class="toc-link" href="index.html">table of contents</a>
 			</div>
 			<div class="box section">
-				
+				<p>defines the http server and the api that uses the core scramble logic.   also hosts the webapp that calls the api.</p>
 			</div>
 			<div class="box section">
 				<pre class="brush: clojure">(ns yvern.scramble.api
@@ -42,13 +42,13 @@
 (def status server-status)</pre>
 			</div>
 						<div class="box section">
-				<p>schema for a valid scramble play.</p>
+				<p>malli schema for a valid scramble play.</p>
 			</div>
 			<div class="box section">
 				<pre class="brush: clojure">(def scramble-play
-  [:map
-   [:letters string?]
-   [:word string?]])</pre>
+  [:map {:registry {::valid-text [:and :string [:re &quot;^[a-z]+\$&quot;]]}}
+     [:letters ::valid-text]
+     [:word ::valid-text]])</pre>
 			</div>
 						<div class="box section">
 				
@@ -63,39 +63,42 @@
 				<pre class="brush: clojure">(def explanation (m/explainer scramble-play))</pre>
 			</div>
 						<div class="box section">
-				
+				<p>body handler that given a valid scramble play, checks its result.  on invalid one returns an explanation as from malli.</p>
 			</div>
 			<div class="box section">
-				<pre class="brush: clojure">(defn scramble-handler [body]
+				<pre class="brush: clojure">(defn scramble-handler
+  [body]
   (if (valid? body)
     {:status 200
      :body (assoc body :scramble? (scramble? body))}
     {:status 400
-     :body {:errors (me/humanize (explanation body))}}))</pre>
+     :body  (assoc body :errors (me/humanize (explanation body)))}))</pre>
 			</div>
 						<div class="box section">
-				
+				<p>basic router that handles the 2 known endpoints, hosting the spa and the api.</p>
 			</div>
 			<div class="box section">
-				<pre class="brush: clojure">(defn router [{:keys [:request-method :uri] :as req}]
+				<pre class="brush: clojure">(defn router
+  [{:keys [:request-method :uri] :as req}]
   (case [request-method uri]
     [:get &quot;/&quot;] {:body (index (app)) :status 200}
     [:post &quot;/api&quot;] ((wrap-format (comp (memoize scramble-handler) :body-params)) req)
     {:body &quot;Not Found&quot; :status 404}))</pre>
 			</div>
 						<div class="box section">
-				
+				<p>starts the server on given port, and returns the server object, that can be checked on or stopped.</p>
 			</div>
 			<div class="box section">
-				<pre class="brush: clojure">(defn start [port']
-  (run-server #'router
-              {:port port' :legacy-return-value? false}))</pre>
+				<pre class="brush: clojure">(defn start
+  [port']
+  (run-server #'router {:port port' :legacy-return-value? false}))</pre>
 			</div>
 						<div class="box section">
-				
+				<p>entrypoint for the server application, that runs on port given as first and only argument, or 8080 by default.  blocks, but can be gracefully halted by entering a newline (enter) on the terminal its running.</p>
 			</div>
 			<div class="box section">
-				<pre class="brush: clojure">(defn -main [&amp; args]
+				<pre class="brush: clojure">(defn -main
+  [&amp; args]
   (let [port' (or (some-&gt; args first Integer/parseInt) 8080)
         svr (start port')]
     (println &quot;server&quot; (status svr) &quot;on:&quot; (str &quot;http://localhost:&quot; (port svr)))

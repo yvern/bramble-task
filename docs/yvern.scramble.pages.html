@@ -21,11 +21,12 @@
 				<a class="toc-link" href="index.html">table of contents</a>
 			</div>
 			<div class="box section">
-				
+				<p>template for the index page of the webapp,  as well as loading the clojurescript source at either execution or compile time.</p>
 			</div>
 			<div class="box section">
 				<pre class="brush: clojure">(ns yvern.scramble.pages
-  (:require [hiccup.core :refer [html]]))</pre>
+  (:require [hiccup.core :refer [html]]
+            [clojure.string :as string]))</pre>
 			</div>
 						<div class="box section">
 				
@@ -34,13 +35,14 @@
 				<pre class="brush: clojure">(defn load-app [] (slurp &quot;src/yvern/scramble/app.cljs&quot;))</pre>
 			</div>
 						<div class="box section">
-				
+				<p>macro that checks whether the project is being compiled, and loads the cljs source in memory,  or if executing from a repl and loads from filesystem, enabling reloading and development.</p>
 			</div>
 			<div class="box section">
-				<pre class="brush: clojure">(defmacro app' []
-    (if *compile-files*
-      `(let [app# ~(load-app)] (fn [] app#))
-      load-app))</pre>
+				<pre class="brush: clojure">(defmacro app'
+  []
+  (if *compile-files*
+    `(let [app# ~(string/replace (load-app) #&quot;\\s+&quot; &quot; &quot;)] (fn [] app#))
+    load-app))</pre>
 			</div>
 						<div class="box section">
 				
@@ -49,10 +51,11 @@
 				<pre class="brush: clojure">(def app (app'))</pre>
 			</div>
 						<div class="box section">
-				
+				<p>hiccup template for index.html, receiving the cljs source code  for the webapp as a parameter to be injected on the correct tag.</p>
 			</div>
 			<div class="box section">
-				<pre class="brush: clojure">(defn index' [app-src]
+				<pre class="brush: clojure">(defn index'
+  [app-src]
   (html
    [:html
     [:head

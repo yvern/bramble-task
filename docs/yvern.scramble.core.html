@@ -21,7 +21,7 @@
 				<a class="toc-link" href="index.html">table of contents</a>
 			</div>
 			<div class="box section">
-				
+				<p>namespace that holds the core logic for checking if with a pool of letters a given word can be formed.</p>
 			</div>
 			<div class="box section">
 				<pre class="brush: clojure">(ns yvern.scramble.core
@@ -69,10 +69,11 @@
      :else (scramble-iter letters word))))</pre>
 			</div>
 						<div class="box section">
-				
+				<p>the entrypoint to check scrambability from the command line.</p>
 			</div>
 			<div class="box section">
-				<pre class="brush: clojure">(defn -main [&amp; args]
+				<pre class="brush: clojure">(defn -main
+  [&amp; args]
   (println
    (cond
      (not= 2 (count args)) &quot;Please provide exactly 2 words to scramble&quot;

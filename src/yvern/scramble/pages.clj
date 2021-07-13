@@ -1,16 +1,25 @@
 (ns yvern.scramble.pages
-  (:require [hiccup.core :refer [html]]))
+  "template for the index page of the webapp,
+   as well as loading the clojurescript source at either execution or compile time."
+  (:require [hiccup.core :refer [html]]
+            [clojure.string :as string]))
 
 (defn load-app [] (slurp "src/yvern/scramble/app.cljs"))
 
-(defmacro app' []
-    (if *compile-files*
-      `(let [app# ~(load-app)] (fn [] app#))
-      load-app))
+(defmacro app'
+  "macro that checks whether the project is being compiled, and loads the cljs source in memory,
+   or if executing from a repl and loads from filesystem, enabling reloading and development."
+  []
+  (if *compile-files*
+    `(let [app# ~(string/replace (load-app) #"\s+" " ")] (fn [] app#))
+    load-app))
 
 (def app (app'))
 
-(defn index' [app-src]
+(defn index'
+  "hiccup template for index.html, receiving the cljs source code
+   for the webapp as a parameter to be injected on the correct tag."
+  [app-src]
   (html
    [:html
     [:head

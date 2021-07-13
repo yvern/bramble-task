@@ -1,4 +1,5 @@
 (ns yvern.scramble.core
+  "namespace that holds the core logic for checking if with a pool of letters a given word can be formed."
   (:gen-class))
 
 (defn char-left?
@@ -35,7 +36,9 @@
      (<= (count letters) (count word)) false
      :else (scramble-iter letters word))))
 
-(defn -main [& args]
+(defn -main
+  "the entrypoint to check scrambability from the command line."
+  [& args]
   (println
    (cond
      (not= 2 (count args)) "Please provide exactly 2 words to scramble"
