@@ -56,8 +56,16 @@ Build runnable uberjar for the api and web app (`scramble-api.jar`):
 here the cljs app is loaded on compile-time and served from memory.
 
 
-Appart from the clojure cli, there is also a `Dockerfile` to not only build all of the above, but also provide an anvironment to run all tests and build a single static binary native cli app via graalvm.
-Please check the `Dockerfile` in order to use them.
+Appart from the clojure cli, there is also a `Dockerfile` to not only build all of the above, but also provide an anvironment to run all tests and build a single static binary native cli app via graalvm:
+
+    $ docker build -t TAG --target TARGET .
+
+where `TAG` would be the name you desire to call it, and the `TARGET` could be any of:
+
+* `deps`: download dependencies for testing and for the project itself
+* `tested`: run all tests, used as a 'requirement' for further building
+* `cli` and `api`: build specified app and put it in an openjdk jre image, ready to run
+* `cli-bin`, or just omitting target: use graalvm to compile the cli app jar into a native standalone executable, and put it into an empty `scratch` image, for small size and fast startup
 
 ## Choices
 

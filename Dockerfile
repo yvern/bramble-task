@@ -7,6 +7,9 @@ COPY deps.edn .
 RUN clj -Spath -X:pkg
 RUN clj -Spath -M:test
 
+FROM openjdk:11.0.11-jre-slim as jre
+WORKDIR /app
+
 
 FROM deps as tested
 COPY src src
@@ -18,12 +21,15 @@ RUN clj -M:test
 FROM tested as cli-jar
 RUN clj -X:pkg:cli
 
+FROM jre as cli
+COPY --from=cli-jar /app/scramble.jar .
+ENTRYPOINT java -jar scramble.jar
+
 
 FROM tested as api-jar
 RUN clj -X:pkg:api
 
-FROM openjdk:11.0.11-jre-slim as api
-WORKDIR /app
+FROM jre as api
 COPY --from=api-jar /app/scramble-api.jar .
 ENTRYPOINT java -jar scramble-api.jar
 CMD 8080
