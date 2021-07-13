@@ -12,16 +12,21 @@
 
   (t/testing "requests with missing fields yield 400 and error message"
     (t/are [input err-msg]
-           (-> input scramble-handler
-               (= {:status 400 :body {:errors err-msg}}))
+           (= {:status 400 :body {:errors err-msg}}
+              (scramble-handler input))
       {:letters "rekqodlw"}
       {:word ["missing required key"]}
 
       {:word "codewars"}
       {:letters ["missing required key"]}
 
+      {:letters "99" :word "!true"}
+      {:letters ["should match regex"]
+       :word ["should match regex"]}
+
       {:letters 99 :word true}
-      {:letters ["should be a string"] :word ["should be a string"]}))
+      {:letters ["should be a string" "should match regex"]
+       :word ["should be a string" "should match regex"]}))
 
   (t/testing "server starts up corectly, handles requests and exits"
     (let [port' 5678

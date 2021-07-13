@@ -13,9 +13,9 @@
 
 (def scramble-play
   "schema for a valid scramble play."
-  [:map
-   [:letters string?]
-   [:word string?]])
+  [:map {:registry {::valid-text [:and :string [:re "^[a-z]+$"]]}}
+     [:letters ::valid-text]
+     [:word ::valid-text]])
 
 (def valid? (m/validator scramble-play))
 
@@ -35,8 +35,7 @@
     {:body "Not Found" :status 404}))
 
 (defn start [port']
-  (run-server #'router
-              {:port port' :legacy-return-value? false}))
+  (run-server #'router {:port port' :legacy-return-value? false}))
 
 (defn -main [& args]
   (let [port' (or (some-> args first Integer/parseInt) 8080)
@@ -49,5 +48,4 @@
 (comment
   (def svr (start 8080))
   (clojure.java.browse/browse-url (str "http://localhost:" (port svr)))
-  @(stop svr)
-  )
+  @(stop svr))
