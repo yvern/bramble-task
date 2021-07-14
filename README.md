@@ -25,8 +25,8 @@ A Scramble checker
 
 Run all tests (assuming you have any of the broeser drivers supported by [etaoin](https://github.com/igrishaev/etaoin)):
 
-    $ clojure -M:test
-    $ clojure -M:test --watch
+    $ clojure -M:dev:test
+    $ clojure -M:dev:test --watch
 
 skip the browser ones by appending `--skip yvern.scramble.e2e`
 
@@ -67,8 +67,9 @@ where `TAG` would be the name you desire to call it, and the `TARGET` could be a
 * `cli` and `api`: build specified app and put it in an openjdk jre image, ready to run
 * `cli-bin`, or just omitting target: use graalvm to compile the cli app jar into a native standalone executable, and put it into an empty `scratch` image, for small size and fast startup
 
-## Choices
+![the app in action](screenshots/res.gif)
 
+## Choices
 
 * `scittle` instead of a full blown, aot compiled clojurescript project:
 

@@ -9,10 +9,11 @@
 
  :aliases
  {:scramble {:main-opts ["-m" "yvern.scramble.core"]}
-  :dev {:extra-paths ["test"]}
+  :dev {:extra-paths ["test"]
+        :extra-deps {etaoin/etaoin {:mvn/version "0.4.5"}
+                     ffclj/ffclj {:mvn/version "0.1.2"}}}
 
-  :test {:extra-deps {etaoin/etaoin {:mvn/version "0.4.5"}
-                      lambdaisland/kaocha {:mvn/version "1.0.861"}}
+  :test {:extra-deps {lambdaisland/kaocha {:mvn/version "1.0.861"}}
          :main-opts ["-m" "kaocha.runner"]}
 
   :no-api {:replace-deps {org.clojure/clojure {:mvn/version "1.10.3"}}}

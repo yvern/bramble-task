@@ -101,7 +101,7 @@
 				<pre class="brush: clojure">(defn text-in [play data]
   [:input.input.is-primary.is-size-5
    {:type &quot;text&quot;
-    :placeholder (str &quot;type here your &quot; (name data))
+    :placeholder (name data)
     :name data
     :on-change #(swap! play assoc data (-&gt; % .-target .-value))
     :value (data @play)}])</pre>

@@ -43,7 +43,7 @@
 (defn text-in [play data]
   [:input.input.is-primary.is-size-5
    {:type "text"
-    :placeholder (str "type here your " (name data))
+    :placeholder (name data)
     :name data
     :on-change #(swap! play assoc data (-> % .-target .-value))
     :value (data @play)}])
