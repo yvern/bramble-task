@@ -6,32 +6,35 @@ A Scramble checker
 
 ## Functionality
 
-* A core library that checks if given a group of letters (the first argument, as a string), the target word (second argument, also as a string) can or not be formed (the returned boolean).
+* A library that checks if a `word` can be formed by the given `letters`.
+    ```clojure
+    ;; (string, string) -> boolean
+    (scramble? letters word) ;; => false
+    ```
 
-* A cli application that reads 2 strings from the commandline and displays a message telling the user if with the given pool of letters one can form the target word.
+* A cli application that exposes the above function to the commandline.
 
-* An HTTP server that listens on a given port, and a post on route `/api` with a body on the shape:
+* An HTTP server that listens on a given port for a POST on route `/api` and expecting a body in the shape:
     ```clojure
     {:letters "poolofletters" :word "targetword"}
     ```
-    answers with status `200` in the form:
+    The successful answer has status `200` and the form:
     ```clojure
     {:letters "poolofletters" :word "targetword" :scramble? false}
     ```
-    or `400` in the case of a malformed body, with a [malli](https://github.com/metosin/malli) explanation attatched.
-    Handles all formats [muuntaja](https://github.com/metosin/muuntaja) handles out of the box.
+    A malformed request has a status of `400` and a body with a [malli](https://github.com/metosin/malli) explanation attatched.
 
-* A cljs SPA made with [scittle](https://github.com/borkdude/scittle), that is hosted from the same server as the api, and uses such to provide the functionality from the frontend.
+    The api handles all formats [muuntaja](https://github.com/metosin/muuntaja) handles out of the box.
+
+* A cljs SPA made with [scittle](https://github.com/borkdude/scittle), that is hosted from the same server as the api, and uses it to provide the same functionality to be used by the fronted.
 
 ## Usage
 
-Run all tests (assuming you have any of the broeser drivers supported by [etaoin](https://github.com/igrishaev/etaoin)):
+Run tests (assuming you have any of the browser drivers supported by [etaoin](https://github.com/igrishaev/etaoin)):
 
     $ clojure -M:dev:test
-    $ clojure -M:dev:test --watch
 
-skip the browser ones by appending `--skip yvern.scramble.e2e`
-
+To skip the browser tests add `--skip yvern.scramble.e2e` to the end of the command.
 
 Run the cli app:
 
@@ -42,6 +45,8 @@ Run the cli app:
 Build runnable uberjar for the cli app (`scramble.jar`):
 
     $ clojure -X:pkg:cli:no-api
+    $ java -jar scramble.jar world word
+    Yes we got scramble!
 
 
 Run the server, both the api and hosting the webapp:

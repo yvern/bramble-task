@@ -5,7 +5,7 @@ RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckod
 RUN tar -xzf geckodriver* && chmod +x geckodriver && mv geckodriver /usr/local/bin/
 COPY deps.edn .
 RUN clj -Spath -X:pkg
-RUN clj -Spath -M:test:e2e
+RUN clj -Spath -M:dev:test
 
 FROM openjdk:11.0.11-jre-slim as jre
 WORKDIR /app
@@ -15,7 +15,7 @@ FROM deps as tested
 COPY src src
 COPY test test
 COPY tests.edn .
-RUN clj -M:test:e2e --fail-fast
+RUN clj -M:dev:test --fail-fast
 
 
 FROM tested as cli-jar
