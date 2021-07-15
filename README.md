@@ -2,6 +2,8 @@
 
 A Scramble checker
 
+![the app in action](screenshots/res.gif)
+
 ## Functionality
 
 * A core library that checks if given a group of letters (the first argument, as a string), the target word (second argument, also as a string) can or not be formed (the returned boolean).
@@ -66,8 +68,6 @@ where `TAG` would be the name you desire to call it, and the `TARGET` could be a
 * `tested`: run all tests, used as a 'requirement' for further building
 * `cli` and `api`: build specified app and put it in an openjdk jre image, ready to run
 * `cli-bin`, or just omitting target: use graalvm to compile the cli app jar into a native standalone executable, and put it into an empty `scratch` image, for small size and fast startup
-
-![the app in action](screenshots/res.gif)
 
 ## Choices
 

@@ -3,7 +3,8 @@
             [clojure.test :as t]
             [yvern.scramble.api :refer [start stop port]]
             [clojure.java.io :as io]
-            [ffclj.core :refer [ffmpeg! ffprobe!]]))
+            [ffclj.core :refer [ffmpeg!]]
+            [clojure.string :as string]))
 
 (defn get-driver
   "utility to try out getting a driver from possible installed"
@@ -37,10 +38,11 @@
   (swap! svr port))
 
 (defn with-driver [f]
-  (mapv io/delete-file (filter #(.isFile %) (file-seq (io/file "screenshots"))))
+  (->> (io/file "screenshots") file-seq (filter #(.isFile %)) (mapv io/delete-file))
   (swap! driver make-driver)
   (f)
-  (e/quit @driver))
+  (e/quit @driver)
+  (->> (io/file "screenshots") file-seq (filter #(string/ends-with? % ".png")) (mapv io/delete-file)))
 
 (defn refresh [f]
   (e/go @driver (str "http://localhost:" (port @svr)))
@@ -98,7 +100,7 @@
 
 (t/deftest e2e-screenshots
   (t/testing "sample flow to generate screenshots"
-    (e/with-wait 0.8
+    (e/with-wait 1
      (doto @driver
       (e/screenshot "screenshots/ss1.png")
       (e/fill {:tag :input :name :letters} "hello")
