@@ -38,11 +38,14 @@
   (swap! svr port))
 
 (defn with-driver [f]
-  (->> (io/file "screenshots") file-seq (filter #(.isFile %)) (mapv io/delete-file))
-  (swap! driver make-driver)
-  (f)
-  (e/quit @driver)
-  (->> (io/file "screenshots") file-seq (filter #(string/ends-with? % ".png")) (mapv io/delete-file)))
+  (let [screenshots (io/file "screenshots")]
+    (if (.exists screenshots)
+      (->> screenshots file-seq (filter #(.isFile %)) (mapv io/delete-file))
+      (.mkdir screenshots))
+    (swap! driver make-driver)
+    (f)
+    (e/quit @driver)
+    (->> screenshots file-seq (filter #(string/ends-with? % ".png")) (mapv io/delete-file))))
 
 (defn refresh [f]
   (e/go @driver (str "http://localhost:" (port @svr)))
@@ -101,26 +104,26 @@
 (t/deftest e2e-screenshots
   (t/testing "sample flow to generate screenshots"
     (e/with-wait 1
-     (doto @driver
-      (e/screenshot "screenshots/ss1.png")
-      (e/fill {:tag :input :name :letters} "hello")
-      (e/screenshot "screenshots/ss2.png")
-      (e/fill {:tag :input :name :word} "world!")
-      (e/screenshot "screenshots/ss3.png")
-      (e/refresh)
-      (e/fill {:tag :input :name :letters} "hello")
-      (e/fill {:tag :input :name :word} "world")
-      (e/screenshot "screenshots/ss4.png")
-      (e/click-single {:tag :button})
-      (e/screenshot "screenshots/ss5.png")
-      (e/fill {:tag :input :name :letters} "world")
-      (e/screenshot "screenshots/ss6.png")
-      (e/fill {:tag :input :name :word} "word")
-      (e/screenshot "screenshots/ss7.png")
-      (e/click-single {:tag :button})
-      (e/screenshot "screenshots/ss8.png")
-      (e/has-text? "Yeah! We got bramble!")
-      (e/has-text? "Words don't bramble...")))
+      (doto @driver
+        (e/screenshot "screenshots/ss1.png")
+        (e/fill {:tag :input :name :letters} "hello")
+        (e/screenshot "screenshots/ss2.png")
+        (e/fill {:tag :input :name :word} "world!")
+        (e/screenshot "screenshots/ss3.png")
+        (e/refresh)
+        (e/fill {:tag :input :name :letters} "hello")
+        (e/fill {:tag :input :name :word} "world")
+        (e/screenshot "screenshots/ss4.png")
+        (e/click-single {:tag :button})
+        (e/screenshot "screenshots/ss5.png")
+        (e/fill {:tag :input :name :letters} "world")
+        (e/screenshot "screenshots/ss6.png")
+        (e/fill {:tag :input :name :word} "word")
+        (e/screenshot "screenshots/ss7.png")
+        (e/click-single {:tag :button})
+        (e/screenshot "screenshots/ss8.png")
+        (e/has-text? "Yeah! We got bramble!")
+        (e/has-text? "Words don't bramble...")))
 
     (with-open [task (ffmpeg!
                       [:y

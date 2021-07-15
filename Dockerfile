@@ -1,11 +1,11 @@
 FROM clojure as deps
 WORKDIR /app
-RUN apt update && apt install wget firefox-esr -y
+RUN apt update && apt install wget firefox-esr ffmpeg -y
 RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.29.1/geckodriver-v0.29.1-linux64.tar.gz
 RUN tar -xzf geckodriver* && chmod +x geckodriver && mv geckodriver /usr/local/bin/
 COPY deps.edn .
 RUN clj -Spath -X:pkg
-RUN clj -Spath -M:dev:test
+RUN clj -Spath -M:test:e2e
 
 FROM openjdk:11.0.11-jre-slim as jre
 WORKDIR /app
@@ -15,7 +15,7 @@ FROM deps as tested
 COPY src src
 COPY test test
 COPY tests.edn .
-RUN clj -M:dev:test
+RUN clj -M:test:e2e --fail-fast
 
 
 FROM tested as cli-jar
