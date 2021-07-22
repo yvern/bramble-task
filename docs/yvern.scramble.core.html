@@ -32,18 +32,18 @@
 			</div>
 			<div class="box section">
 				<pre class="brush: clojure">(defn char-left?
-  [histogram char']
-  (and (contains? histogram char')
-       (pos? (histogram char'))))</pre>
+  [histogram letter]
+  (and (contains? histogram letter)
+       (pos? (histogram letter))))</pre>
 			</div>
 						<div class="box section">
 				<p>given a char histogram (as from frequencies on a string) and a single char,  checks if the char is present and its count must be decremented, else ends reduction with false.</p>
 			</div>
 			<div class="box section">
 				<pre class="brush: clojure">(defn scramble-reducer
-  [histogram char']
-  (if (char-left? histogram char')
-    (update histogram char' dec)
+  [histogram letter]
+  (if (char-left? histogram letter)
+    (update histogram letter dec)
     (reduced false)))</pre>
 			</div>
 						<div class="box section">

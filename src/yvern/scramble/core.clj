@@ -5,16 +5,16 @@
 (defn char-left?
   "given a char histogram (as from frequencies on a string) and a single char,
    checks if the histogram contains it, and if the count is at least 1."
-  [histogram char']
-  (and (contains? histogram char')
-       (pos? (histogram char'))))
+  [histogram letter]
+  (and (contains? histogram letter)
+       (pos? (histogram letter))))
 
 (defn scramble-reducer
   "given a char histogram (as from frequencies on a string) and a single char,
    checks if the char is present and its count must be decremented, else ends reduction with false."
-  [histogram char']
-  (if (char-left? histogram char')
-    (update histogram char' dec)
+  [histogram letter]
+  (if (char-left? histogram letter)
+    (update histogram letter dec)
     (reduced false)))
 
 (defn scramble-iter

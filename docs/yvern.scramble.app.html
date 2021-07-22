@@ -88,35 +88,33 @@
 			</div>
 			<div class="box section">
 				<pre class="brush: clojure">(defn play-1 [{:keys [letters word scramble?]}]
-  (columned [center-p letters]
-            [center-p word]
-            (if scramble?
-              [:span.is-light.tag.is-success.is-large &quot;Yeah! We got bramble!&quot;]
-              [:span.is-light.tag.is-danger.is-large &quot;Words don't bramble...&quot;])))</pre>
+  [columned
+   [center-p letters]
+   [center-p word]
+   (if scramble?
+     [:span.is-light.tag.is-success.is-large &quot;Yeah! We got bramble!&quot;]
+     [:span.is-light.tag.is-danger.is-large &quot;Words don't bramble...&quot;])])</pre>
 			</div>
 						<div class="box section">
 				
 			</div>
 			<div class="box section">
-				<pre class="brush: clojure">(defn text-in [play data]
+				<pre class="brush: clojure">(defn text-in [play data update-text]
   [:input.input.is-primary.is-size-5
    {:type &quot;text&quot;
     :placeholder (name data)
     :name data
-    :on-change #(swap! play assoc data (-&gt; % .-target .-value))
-    :value (data @play)}])</pre>
+    :on-change (partial update-text data)
+    :value (data play)}])</pre>
 			</div>
 						<div class="box section">
 				
 			</div>
 			<div class="box section">
-				<pre class="brush: clojure">(defn submit [play plays]
+				<pre class="brush: clojure">(defn submit [play do-play]
   [:button.button.is-link.is-fullwidth.is-size-5
-   {:on-click #(do (scramble! plays @play)
-                   (doto play
-                     (swap! assoc :letters )
-                     (swap! assoc :word )))
-    :disabled ((memoize invalid-play?) @play)}
+   {:on-click do-play
+    :disabled ((memoize invalid-play?) play)}
    &quot;Let's go!&quot;])</pre>
 			</div>
 						<div class="box section">
@@ -125,17 +123,24 @@
 			<div class="box section">
 				<pre class="brush: clojure">(defn main []
   (let [plays (r/atom '())
-        play (r/atom {:letters  :word })]
+        new-play (r/atom {:letters  :word })
+        update-text #(swap! new-play assoc %1 (-&gt; %2 .-target .-value))
+        do-play #(do (scramble! plays @new-play)
+                     (doto new-play
+                       (swap! assoc :letters )
+                       (swap! assoc :word )))]
     (fn []
       [:div section-hero
        [:br]
-       (columned (text-in play :letters)
-                 (text-in play :word)
-                 (submit play plays))
+       [columned
+        [text-in @new-play :letters update-text]
+        [text-in @new-play :word update-text]
+        [submit @new-play do-play]]
        [:br]
-       (columned [result-header &quot;Letters&quot;]
-                 [result-header &quot;Word&quot;]
-                 [result-header &quot;Bramble?&quot;])
+       [columned
+        [result-header &quot;Letters&quot;]
+        [result-header &quot;Word&quot;]
+        [result-header &quot;Bramble?&quot;]]
        (for [play @plays] [play-1 play])])))</pre>
 			</div>
 						<div class="box section">

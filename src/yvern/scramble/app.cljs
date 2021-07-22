@@ -34,42 +34,47 @@
     [:p.subtitle "A Scramble checker"]]])
 
 (defn play-1 [{:keys [letters word scramble?]}]
-  (columned [center-p letters]
-            [center-p word]
-            (if scramble?
-              [:span.is-light.tag.is-success.is-large "Yeah! We got bramble!"]
-              [:span.is-light.tag.is-danger.is-large "Words don't bramble..."])))
+  [columned
+   [center-p letters]
+   [center-p word]
+   (if scramble?
+     [:span.is-light.tag.is-success.is-large "Yeah! We got bramble!"]
+     [:span.is-light.tag.is-danger.is-large "Words don't bramble..."])])
 
-(defn text-in [play data]
+(defn text-in [play data update-text]
   [:input.input.is-primary.is-size-5
    {:type "text"
     :placeholder (name data)
     :name data
-    :on-change #(swap! play assoc data (-> % .-target .-value))
-    :value (data @play)}])
+    :on-change (partial update-text data)
+    :value (data play)}])
 
-(defn submit [play plays]
+(defn submit [play do-play]
   [:button.button.is-link.is-fullwidth.is-size-5
-   {:on-click #(do (scramble! plays @play)
-                   (doto play
-                     (swap! assoc :letters "")
-                     (swap! assoc :word "")))
-    :disabled ((memoize invalid-play?) @play)}
+   {:on-click do-play
+    :disabled ((memoize invalid-play?) play)}
    "Let's go!"])
 
 (defn main []
   (let [plays (r/atom '())
-        play (r/atom {:letters "" :word ""})]
+        new-play (r/atom {:letters "" :word ""})
+        update-text #(swap! new-play assoc %1 (-> %2 .-target .-value))
+        do-play #(do (scramble! plays @new-play)
+                     (doto new-play
+                       (swap! assoc :letters "")
+                       (swap! assoc :word "")))]
     (fn []
       [:div section-hero
        [:br]
-       (columned (text-in play :letters)
-                 (text-in play :word)
-                 (submit play plays))
+       [columned
+        [text-in @new-play :letters update-text]
+        [text-in @new-play :word update-text]
+        [submit @new-play do-play]]
        [:br]
-       (columned [result-header "Letters"]
-                 [result-header "Word"]
-                 [result-header "Bramble?"])
+       [columned
+        [result-header "Letters"]
+        [result-header "Word"]
+        [result-header "Bramble?"]]
        (for [play @plays] [play-1 play])])))
 
 (dom/render [main] (.getElementById js/document "content"))
