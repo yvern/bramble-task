@@ -55,26 +55,26 @@
     :disabled ((memoize invalid-play?) play)}
    "Let's go!"])
 
-(defn main []
-  (let [plays (r/atom '())
-        new-play (r/atom {:letters "" :word ""})
-        update-text #(swap! new-play assoc %1 (-> %2 .-target .-value))
+(defn main [plays new-play]
+  (let [update-text #(swap! new-play assoc %1 (-> %2 .-target .-value))
         do-play #(do (scramble! plays @new-play)
                      (doto new-play
                        (swap! assoc :letters "")
                        (swap! assoc :word "")))]
-    (fn []
-      [:div section-hero
-       [:br]
-       [columned
-        [text-in @new-play :letters update-text]
-        [text-in @new-play :word update-text]
-        [submit @new-play do-play]]
-       [:br]
-       [columned
-        [result-header "Letters"]
-        [result-header "Word"]
-        [result-header "Bramble?"]]
-       (for [play @plays] [play-1 play])])))
+    [:div section-hero
+     [:br]
+     [columned
+      [text-in @new-play :letters update-text]
+      [text-in @new-play :word update-text]
+      [submit @new-play do-play]]
+     [:br]
+     [columned
+      [result-header "Letters"]
+      [result-header "Word"]
+      [result-header "Bramble?"]]
+     (for [play @plays] [play-1 play])]))
 
-(dom/render [main] (.getElementById js/document "content"))
+(defonce plays (r/atom '()))
+(defonce new-play (r/atom {:letters "" :word ""}))
+
+(dom/render [main plays new-play] (.getElementById js/document "content"))

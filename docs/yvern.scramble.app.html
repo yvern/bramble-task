@@ -121,33 +121,37 @@
 				
 			</div>
 			<div class="box section">
-				<pre class="brush: clojure">(defn main []
-  (let [plays (r/atom '())
-        new-play (r/atom {:letters  :word })
-        update-text #(swap! new-play assoc %1 (-&gt; %2 .-target .-value))
+				<pre class="brush: clojure">(defn main [plays new-play]
+  (let [update-text #(swap! new-play assoc %1 (-&gt; %2 .-target .-value))
         do-play #(do (scramble! plays @new-play)
                      (doto new-play
                        (swap! assoc :letters )
                        (swap! assoc :word )))]
-    (fn []
-      [:div section-hero
-       [:br]
-       [columned
-        [text-in @new-play :letters update-text]
-        [text-in @new-play :word update-text]
-        [submit @new-play do-play]]
-       [:br]
-       [columned
-        [result-header &quot;Letters&quot;]
-        [result-header &quot;Word&quot;]
-        [result-header &quot;Bramble?&quot;]]
-       (for [play @plays] [play-1 play])])))</pre>
+        [:div section-hero
+     [:br]
+     [columned
+      [text-in @new-play :letters update-text]
+      [text-in @new-play :word update-text]
+      [submit @new-play do-play]]
+     [:br]
+     [columned
+      [result-header &quot;Letters&quot;]
+      [result-header &quot;Word&quot;]
+      [result-header &quot;Bramble?&quot;]]
+     (for [play @plays] [play-1 play])]))</pre>
 			</div>
 						<div class="box section">
 				
 			</div>
 			<div class="box section">
-				<pre class="brush: clojure">(dom/render [main] (.getElementById js/document &quot;content&quot;))</pre>
+				<pre class="brush: clojure">(defonce plays (r/atom '()))
+(defonce new-play (r/atom {:letters  :word }))</pre>
+			</div>
+						<div class="box section">
+				
+			</div>
+			<div class="box section">
+				<pre class="brush: clojure">(dom/render [main plays new-play] (.getElementById js/document &quot;content&quot;))</pre>
 			</div>
 			
 			<div class="box footer">
